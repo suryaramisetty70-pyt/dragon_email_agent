@@ -1,0 +1,55 @@
+# =============================================================================
+# PROJECT DRAGON - EMAIL CONFIGURATION
+# =============================================================================
+# Configure your email accounts below
+# =============================================================================
+
+email_accounts:
+  # Account 1: vtu27657@veltec.edu.in (College/Academic)
+  - email: "vtu27657@veltec.edu.in"
+    password: "YOUR_APP_PASSWORD_HERE"  # Use App Password, not regular password
+    imap_host: "imap.veltec.edu.in"
+    imap_port: 993
+    smtp_host: "smtp.veltec.edu.in"
+    smtp_port: 587
+    is_active: true
+    account_type: "college"  # college, personal, work
+    display_name: "College Email"
+    
+  # Account 2: suryaramisetty70@gmail.com (Personal)
+  - email: "suryaramisetty70@gmail.com"
+    password: "YOUR_APP_PASSWORD_HERE"  # Use App Password from Google Account
+    imap_host: "imap.gmail.com"
+    imap_port: 993
+    smtp_host: "smtp.gmail.com"
+    smtp_port: 587
+    is_active: true
+    account_type: "personal"  # college, personal, work
+    display_name: "Personal Email"
+    # For Gmail, you can also use Gmail API
+    use_gmail_api: true
+    gmail_credentials_path: "config/gmail_credentials.json"
+
+# Gmail API Settings (for @gmail.com accounts)
+gmail_api:
+  enabled: true
+  credentials_path: "config/gmail_credentials.json"
+  token_path: "config/gmail_token.json"
+
+# Sync Settings
+sync:
+  interval_minutes: 5  # Check for new emails every 5 minutes
+  batch_size: 50
+  sync_on_startup: true
+
+# Notification Settings
+notifications:
+  email_arrival: true
+  important_emails: true
+  follow_up_reminders: true
+
+# Voice Settings
+voice:
+  enabled: false  # Set to true if you want voice commands
+  wake_word: "hey dragon"
+  language: "en-US"

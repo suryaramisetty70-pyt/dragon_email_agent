@@ -1,0 +1,12 @@
+analytics
+api
+automation
+core
+database
+email_engine
+integrations
+memory
+rag
+security
+utils
+voice

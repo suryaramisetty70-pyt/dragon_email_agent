@@ -1,0 +1,19 @@
+2026-06-01 16:31:37 | ERROR | __main__:initialize:129 - Initialization failed: '_GeneratorContextManager' object has no attribute 'query'
+2026-06-01 16:31:37 | ERROR | __main__:main:752 - Failed to initialize Dragon Email Agent
+2026-06-01 16:32:59 | ERROR | __main__:initialize:129 - Initialization failed: '_GeneratorContextManager' object has no attribute 'query'
+2026-06-01 16:32:59 | ERROR | __main__:main:752 - Failed to initialize Dragon Email Agent
+2026-06-01 16:33:46 | ERROR | __main__:initialize:129 - Initialization failed: autocommit=True is no longer supported
+2026-06-01 16:33:46 | ERROR | __main__:main:752 - Failed to initialize Dragon Email Agent
+2026-06-01 16:33:55 | ERROR | __main__:initialize:129 - Initialization failed: Could not determine join condition between parent/child tables on relationship Contact.emails - there are no foreign keys linking these tables.  Ensure that referencing columns are associated with a ForeignKey or ForeignKeyConstraint, or specify a 'primaryjoin' expression.
+2026-06-01 16:33:55 | ERROR | __main__:main:752 - Failed to initialize Dragon Email Agent
+2026-06-01 16:35:06 | ERROR | security:log:242 - Audit log error: No module named 'structlog'
+2026-06-01 16:39:08 | ERROR | security:log:242 - Audit log error: No module named 'structlog'
+2026-06-01 16:39:24 | ERROR | security:log:242 - Audit log error: No module named 'structlog'
+2026-06-01 16:47:07 | ERROR | security:log:242 - Audit log error: No module named 'structlog'
+2026-06-01 16:47:07 | ERROR | __main__:_main_loop:199 - Main loop error: IMAPIntegration.disconnect() missing 1 required positional argument: 'account_name'
+2026-06-01 16:55:25 | ERROR | integrations:connect:377 - IMAP connection failed: [Errno -2] Name or service not known
+2026-06-01 16:55:25 | ERROR | integrations:connect:377 - IMAP connection failed: b'[ALERT] Application-specific password required: https://support.google.com/accounts/answer/185833 (Failure)'
+2026-06-01 17:15:24 | ERROR | security:log:242 - Audit log error: No module named 'structlog'
+2026-06-01 17:15:24 | ERROR | integrations:connect:377 - IMAP connection failed: 'NoneType' object has no attribute 'disconnect'
+2026-06-01 17:16:17 | ERROR | security:log:242 - Audit log error: No module named 'structlog'
+2026-06-01 17:16:17 | ERROR | integrations:connect:377 - IMAP connection failed: 'NoneType' object has no attribute 'disconnect'

@@ -1,0 +1,29 @@
+{
+  "accounts": [
+    {
+      "email": "vtu27657@veltech.edu.in",
+      "password": "jayasurya_ram",
+      "imap_host": "mail.veltech.edu.in",
+      "imap_port": 993,
+      "smtp_host": "mail.veltech.edu.in",
+      "smtp_port": 587,
+      "is_active": true,
+      "account_type": "college",
+      "display_name": "College Email"
+    },
+    {
+      "email": "suryaramisetty70@gmail.com",
+      "password": "tflbhmszmsutpsip",
+      "imap_host": "imap.gmail.com",
+      "imap_port": 993,
+      "smtp_host": "smtp.gmail.com",
+      "smtp_port": 587,
+      "is_active": true,
+      "account_type": "personal",
+      "display_name": "Personal Email"
+    }
+  ],
+  "sync_interval_minutes": 5,
+  "sync_on_startup": true,
+  "notifications_enabled": true
+}

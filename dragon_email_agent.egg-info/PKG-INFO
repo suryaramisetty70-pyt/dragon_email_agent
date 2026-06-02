@@ -1,0 +1,23 @@
+Metadata-Version: 2.4
+Name: dragon-email-agent
+Version: 1.0.0
+Summary: Project Dragon - Ultimate Email AI Agent
+Author: Project Dragon Team
+Requires-Python: >=3.10
+Requires-Dist: loguru>=0.7.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: pydantic-settings>=2.0.0
+Requires-Dist: sqlalchemy>=2.0.0
+Requires-Dist: fastapi>=0.100.0
+Requires-Dist: uvicorn>=0.23.0
+Requires-Dist: python-dateutil>=2.8.0
+Requires-Dist: beautifulsoup4>=4.12.0
+Requires-Dist: apscheduler>=3.10.0
+Provides-Extra: voice
+Requires-Dist: SpeechRecognition>=3.10.0; extra == "voice"
+Requires-Dist: pyttsx3>=2.90; extra == "voice"
+Provides-Extra: chromadb
+Requires-Dist: chromadb>=0.4.0; extra == "chromadb"
+Provides-Extra: security
+Requires-Dist: cryptography>=41.0.0; extra == "security"
+Dynamic: requires-python

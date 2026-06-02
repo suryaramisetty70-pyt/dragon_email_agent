@@ -1,0 +1,308 @@
+2026-06-01 16:31:08 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 16:31:08 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 16:31:28 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 16:31:28 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 16:31:36 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 16:31:36 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 16:31:37 | INFO | __main__:initialize:72 - Initializing Dragon Email Agent...
+2026-06-01 16:31:37 | INFO | __main__:initialize:76 - Setting up database...
+2026-06-01 16:31:37 | ERROR | __main__:initialize:129 - Initialization failed: '_GeneratorContextManager' object has no attribute 'query'
+2026-06-01 16:31:37 | ERROR | __main__:main:752 - Failed to initialize Dragon Email Agent
+2026-06-01 16:32:59 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 16:32:59 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 16:32:59 | INFO | __main__:initialize:72 - Initializing Dragon Email Agent...
+2026-06-01 16:32:59 | INFO | __main__:initialize:76 - Setting up database...
+2026-06-01 16:32:59 | ERROR | __main__:initialize:129 - Initialization failed: '_GeneratorContextManager' object has no attribute 'query'
+2026-06-01 16:32:59 | ERROR | __main__:main:752 - Failed to initialize Dragon Email Agent
+2026-06-01 16:33:46 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 16:33:46 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 16:33:46 | INFO | __main__:initialize:72 - Initializing Dragon Email Agent...
+2026-06-01 16:33:46 | INFO | __main__:initialize:76 - Setting up database...
+2026-06-01 16:33:46 | ERROR | __main__:initialize:129 - Initialization failed: autocommit=True is no longer supported
+2026-06-01 16:33:46 | ERROR | __main__:main:752 - Failed to initialize Dragon Email Agent
+2026-06-01 16:33:55 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 16:33:55 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 16:33:55 | INFO | __main__:initialize:72 - Initializing Dragon Email Agent...
+2026-06-01 16:33:55 | INFO | __main__:initialize:76 - Setting up database...
+2026-06-01 16:33:55 | ERROR | __main__:initialize:129 - Initialization failed: Could not determine join condition between parent/child tables on relationship Contact.emails - there are no foreign keys linking these tables.  Ensure that referencing columns are associated with a ForeignKey or ForeignKeyConstraint, or specify a 'primaryjoin' expression.
+2026-06-01 16:33:55 | ERROR | __main__:main:752 - Failed to initialize Dragon Email Agent
+2026-06-01 16:34:58 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 16:34:58 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 16:34:59 | INFO | __main__:initialize:72 - Initializing Dragon Email Agent...
+2026-06-01 16:34:59 | INFO | __main__:initialize:76 - Setting up database...
+2026-06-01 16:34:59 | INFO | __main__:initialize:79 - Database initialized
+2026-06-01 16:34:59 | INFO | __main__:initialize:82 - Initializing email engine...
+2026-06-01 16:34:59 | INFO | email_engine:initialize:744 - Email Engine initialized
+2026-06-01 16:34:59 | INFO | __main__:initialize:86 - Initializing memory system...
+2026-06-01 16:34:59 | INFO | memory:initialize:256 - Memory System initialized
+2026-06-01 16:34:59 | INFO | __main__:initialize:90 - Initializing RAG system...
+2026-06-01 16:34:59 | WARNING | rag:_initialize_model:44 - Sentence Transformers not available
+2026-06-01 16:34:59 | INFO | rag:initialize:471 - RAG System initialized
+2026-06-01 16:34:59 | INFO | __main__:initialize:94 - Initializing security...
+2026-06-01 16:34:59 | WARNING | security:_initialize:41 - Fernet cryptography not available
+2026-06-01 16:34:59 | INFO | security:initialize:441 - Security Module initialized
+2026-06-01 16:34:59 | INFO | __main__:initialize:98 - Initializing automation...
+2026-06-01 16:34:59 | INFO | automation:start:514 - Automation scheduler started
+2026-06-01 16:34:59 | INFO | automation:initialize:625 - Automation Engine initialized
+2026-06-01 16:34:59 | INFO | __main__:initialize:102 - Initializing analytics...
+2026-06-01 16:34:59 | INFO | analytics:initialize:476 - Analytics Module initialized
+2026-06-01 16:34:59 | INFO | __main__:initialize:106 - Initializing integrations...
+2026-06-01 16:34:59 | INFO | integrations:initialize:656 - Integration Manager initialized
+2026-06-01 16:34:59 | INFO | __main__:initialize:112 - Initializing voice system...
+2026-06-01 16:34:59 | INFO | voice:initialize:637 - Voice System initialized
+2026-06-01 16:34:59 | INFO | __main__:initialize:121 - Loading contact memories...
+2026-06-01 16:34:59 | INFO | __main__:initialize:125 - Dragon Email Agent initialized successfully!
+2026-06-01 16:34:59 | INFO | __main__:start:146 - Starting Dragon Email Agent...
+2026-06-01 16:34:59 | INFO | voice:activate:645 - Voice system activated
+2026-06-01 16:34:59 | INFO | __main__:start:152 - Voice system activated
+2026-06-01 16:34:59 | INFO | __main__:_start_background_tasks:175 - Background scheduler started
+2026-06-01 16:34:59 | INFO | __main__:_main_loop:179 - Dragon Email Agent is running. Type 'help' for commands.
+2026-06-01 16:35:06 | INFO | __main__:signal_handler:732 - Received shutdown signal
+2026-06-01 16:35:06 | INFO | __main__:shutdown:622 - Shutting down Dragon Email Agent...
+2026-06-01 16:35:06 | INFO | voice:deactivate:656 - Voice system deactivated
+2026-06-01 16:35:06 | INFO | voice:shutdown:754 - Voice System shutdown complete
+2026-06-01 16:35:06 | INFO | automation:stop:520 - Automation scheduler stopped
+2026-06-01 16:35:06 | INFO | automation:shutdown:702 - Automation Engine shutdown complete
+2026-06-01 16:35:06 | INFO | analytics:shutdown:504 - Analytics Module shutdown complete
+2026-06-01 16:35:06 | INFO | integrations:shutdown:721 - Integration Manager shutdown complete
+2026-06-01 16:35:06 | INFO | rag:shutdown:632 - RAG System shutdown complete
+2026-06-01 16:35:06 | ERROR | security:log:242 - Audit log error: No module named 'structlog'
+2026-06-01 16:35:06 | INFO | security:shutdown:511 - Security Module shutdown complete
+2026-06-01 16:35:06 | INFO | memory:shutdown:479 - Memory System shutdown complete
+2026-06-01 16:35:06 | INFO | email_engine:shutdown:1006 - Email Engine shutdown complete
+2026-06-01 16:35:06 | INFO | __main__:shutdown:658 - Dragon Email Agent shutdown complete
+2026-06-01 16:35:27 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 16:35:27 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 16:35:35 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 16:35:35 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 16:35:43 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 16:35:43 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 16:35:49 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 16:35:49 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 16:39:01 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 16:39:01 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 16:39:01 | INFO | __main__:initialize:72 - Initializing Dragon Email Agent...
+2026-06-01 16:39:01 | INFO | __main__:initialize:76 - Setting up database...
+2026-06-01 16:39:01 | INFO | __main__:initialize:79 - Database initialized
+2026-06-01 16:39:01 | INFO | __main__:initialize:82 - Initializing email engine...
+2026-06-01 16:39:01 | INFO | email_engine:initialize:744 - Email Engine initialized
+2026-06-01 16:39:01 | INFO | __main__:initialize:86 - Initializing memory system...
+2026-06-01 16:39:01 | INFO | memory:initialize:256 - Memory System initialized
+2026-06-01 16:39:01 | INFO | __main__:initialize:90 - Initializing RAG system...
+2026-06-01 16:39:01 | WARNING | rag:_initialize_model:44 - Sentence Transformers not available
+2026-06-01 16:39:01 | INFO | rag:initialize:471 - RAG System initialized
+2026-06-01 16:39:01 | INFO | __main__:initialize:94 - Initializing security...
+2026-06-01 16:39:01 | WARNING | security:_initialize:41 - Fernet cryptography not available
+2026-06-01 16:39:01 | INFO | security:initialize:441 - Security Module initialized
+2026-06-01 16:39:01 | INFO | __main__:initialize:98 - Initializing automation...
+2026-06-01 16:39:01 | INFO | automation:start:514 - Automation scheduler started
+2026-06-01 16:39:01 | INFO | automation:initialize:625 - Automation Engine initialized
+2026-06-01 16:39:01 | INFO | __main__:initialize:102 - Initializing analytics...
+2026-06-01 16:39:01 | INFO | analytics:initialize:476 - Analytics Module initialized
+2026-06-01 16:39:01 | INFO | __main__:initialize:106 - Initializing integrations...
+2026-06-01 16:39:01 | INFO | integrations:initialize:656 - Integration Manager initialized
+2026-06-01 16:39:01 | INFO | __main__:initialize:112 - Initializing voice system...
+2026-06-01 16:39:01 | INFO | voice:initialize:659 - Voice System initialized
+2026-06-01 16:39:01 | INFO | __main__:initialize:121 - Loading contact memories...
+2026-06-01 16:39:01 | INFO | __main__:initialize:125 - Dragon Email Agent initialized successfully!
+2026-06-01 16:39:01 | INFO | __main__:start:146 - Starting Dragon Email Agent...
+2026-06-01 16:39:01 | INFO | voice:activate:667 - Voice system activated
+2026-06-01 16:39:01 | INFO | __main__:start:152 - Voice system activated
+2026-06-01 16:39:01 | INFO | __main__:_start_background_tasks:175 - Background scheduler started
+2026-06-01 16:39:01 | INFO | __main__:_main_loop:179 - Dragon Email Agent is running. Type 'help' for commands.
+2026-06-01 16:39:08 | INFO | __main__:signal_handler:752 - Received shutdown signal
+2026-06-01 16:39:08 | INFO | __main__:shutdown:642 - Shutting down Dragon Email Agent...
+2026-06-01 16:39:08 | INFO | voice:deactivate:678 - Voice system deactivated
+2026-06-01 16:39:08 | INFO | voice:shutdown:808 - Voice System shutdown complete
+2026-06-01 16:39:08 | INFO | automation:stop:520 - Automation scheduler stopped
+2026-06-01 16:39:08 | INFO | automation:shutdown:702 - Automation Engine shutdown complete
+2026-06-01 16:39:08 | INFO | analytics:shutdown:504 - Analytics Module shutdown complete
+2026-06-01 16:39:08 | INFO | integrations:shutdown:721 - Integration Manager shutdown complete
+2026-06-01 16:39:08 | INFO | rag:shutdown:632 - RAG System shutdown complete
+2026-06-01 16:39:08 | ERROR | security:log:242 - Audit log error: No module named 'structlog'
+2026-06-01 16:39:08 | INFO | security:shutdown:511 - Security Module shutdown complete
+2026-06-01 16:39:08 | INFO | memory:shutdown:479 - Memory System shutdown complete
+2026-06-01 16:39:08 | INFO | email_engine:shutdown:1006 - Email Engine shutdown complete
+2026-06-01 16:39:08 | INFO | __main__:shutdown:678 - Dragon Email Agent shutdown complete
+2026-06-01 16:39:14 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 16:39:14 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 16:39:15 | INFO | __main__:initialize:72 - Initializing Dragon Email Agent...
+2026-06-01 16:39:15 | INFO | __main__:initialize:76 - Setting up database...
+2026-06-01 16:39:15 | INFO | __main__:initialize:79 - Database initialized
+2026-06-01 16:39:15 | INFO | __main__:initialize:82 - Initializing email engine...
+2026-06-01 16:39:15 | INFO | email_engine:initialize:744 - Email Engine initialized
+2026-06-01 16:39:15 | INFO | __main__:initialize:86 - Initializing memory system...
+2026-06-01 16:39:15 | INFO | memory:initialize:256 - Memory System initialized
+2026-06-01 16:39:15 | INFO | __main__:initialize:90 - Initializing RAG system...
+2026-06-01 16:39:15 | WARNING | rag:_initialize_model:44 - Sentence Transformers not available
+2026-06-01 16:39:15 | INFO | rag:initialize:471 - RAG System initialized
+2026-06-01 16:39:15 | INFO | __main__:initialize:94 - Initializing security...
+2026-06-01 16:39:15 | WARNING | security:_initialize:41 - Fernet cryptography not available
+2026-06-01 16:39:15 | INFO | security:initialize:441 - Security Module initialized
+2026-06-01 16:39:15 | INFO | __main__:initialize:98 - Initializing automation...
+2026-06-01 16:39:15 | INFO | automation:start:514 - Automation scheduler started
+2026-06-01 16:39:15 | INFO | automation:initialize:625 - Automation Engine initialized
+2026-06-01 16:39:15 | INFO | __main__:initialize:102 - Initializing analytics...
+2026-06-01 16:39:15 | INFO | analytics:initialize:476 - Analytics Module initialized
+2026-06-01 16:39:15 | INFO | __main__:initialize:106 - Initializing integrations...
+2026-06-01 16:39:15 | INFO | integrations:initialize:656 - Integration Manager initialized
+2026-06-01 16:39:15 | INFO | __main__:initialize:112 - Initializing voice system...
+2026-06-01 16:39:15 | INFO | voice:initialize:659 - Voice System initialized
+2026-06-01 16:39:15 | INFO | __main__:initialize:121 - Loading contact memories...
+2026-06-01 16:39:15 | INFO | __main__:initialize:125 - Dragon Email Agent initialized successfully!
+2026-06-01 16:39:15 | INFO | __main__:start:146 - Starting Dragon Email Agent...
+2026-06-01 16:39:15 | INFO | voice:activate:667 - Voice system activated
+2026-06-01 16:39:15 | INFO | __main__:start:152 - Voice system activated
+2026-06-01 16:39:15 | INFO | __main__:_start_background_tasks:175 - Background scheduler started
+2026-06-01 16:39:15 | INFO | __main__:_main_loop:179 - Dragon Email Agent is running. Type 'help' for commands.
+2026-06-01 16:39:24 | INFO | __main__:signal_handler:752 - Received shutdown signal
+2026-06-01 16:39:24 | INFO | __main__:shutdown:642 - Shutting down Dragon Email Agent...
+2026-06-01 16:39:24 | INFO | voice:deactivate:678 - Voice system deactivated
+2026-06-01 16:39:24 | INFO | voice:shutdown:808 - Voice System shutdown complete
+2026-06-01 16:39:24 | INFO | automation:stop:520 - Automation scheduler stopped
+2026-06-01 16:39:24 | INFO | automation:shutdown:702 - Automation Engine shutdown complete
+2026-06-01 16:39:24 | INFO | analytics:shutdown:504 - Analytics Module shutdown complete
+2026-06-01 16:39:24 | INFO | integrations:shutdown:721 - Integration Manager shutdown complete
+2026-06-01 16:39:24 | INFO | rag:shutdown:632 - RAG System shutdown complete
+2026-06-01 16:39:24 | ERROR | security:log:242 - Audit log error: No module named 'structlog'
+2026-06-01 16:39:24 | INFO | security:shutdown:511 - Security Module shutdown complete
+2026-06-01 16:39:24 | INFO | memory:shutdown:479 - Memory System shutdown complete
+2026-06-01 16:39:24 | INFO | email_engine:shutdown:1006 - Email Engine shutdown complete
+2026-06-01 16:39:24 | INFO | __main__:shutdown:678 - Dragon Email Agent shutdown complete
+2026-06-01 16:47:00 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 16:47:00 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 16:47:00 | INFO | __main__:initialize:72 - Initializing Dragon Email Agent...
+2026-06-01 16:47:00 | INFO | __main__:initialize:76 - Setting up database...
+2026-06-01 16:47:01 | INFO | __main__:initialize:79 - Database initialized
+2026-06-01 16:47:01 | INFO | __main__:initialize:82 - Initializing email engine...
+2026-06-01 16:47:01 | INFO | email_engine:initialize:750 - Email Engine initialized
+2026-06-01 16:47:01 | INFO | __main__:initialize:86 - Initializing memory system...
+2026-06-01 16:47:01 | INFO | memory:initialize:256 - Memory System initialized
+2026-06-01 16:47:01 | INFO | __main__:initialize:90 - Initializing RAG system...
+2026-06-01 16:47:01 | WARNING | rag:_initialize_model:44 - Sentence Transformers not available
+2026-06-01 16:47:01 | INFO | rag:initialize:471 - RAG System initialized
+2026-06-01 16:47:01 | INFO | __main__:initialize:94 - Initializing security...
+2026-06-01 16:47:01 | WARNING | security:_initialize:41 - Fernet cryptography not available
+2026-06-01 16:47:01 | INFO | security:initialize:441 - Security Module initialized
+2026-06-01 16:47:01 | INFO | __main__:initialize:98 - Initializing automation...
+2026-06-01 16:47:01 | INFO | automation:start:514 - Automation scheduler started
+2026-06-01 16:47:01 | INFO | automation:initialize:625 - Automation Engine initialized
+2026-06-01 16:47:01 | INFO | __main__:initialize:102 - Initializing analytics...
+2026-06-01 16:47:01 | INFO | analytics:initialize:476 - Analytics Module initialized
+2026-06-01 16:47:01 | INFO | __main__:initialize:106 - Initializing integrations...
+2026-06-01 16:47:01 | WARNING | integrations:_connect_imap_account:713 - Account vtu27657@veltec.edu.in not configured with real credentials
+2026-06-01 16:47:01 | WARNING | integrations:_connect_imap_account:713 - Account suryaramisetty70@gmail.com not configured with real credentials
+2026-06-01 16:47:01 | INFO | integrations:initialize:661 - Integration Manager initialized
+2026-06-01 16:47:01 | INFO | __main__:initialize:115 - Initializing voice system...
+2026-06-01 16:47:01 | INFO | voice:initialize:659 - Voice System initialized
+2026-06-01 16:47:01 | INFO | __main__:initialize:124 - Loading contact memories...
+2026-06-01 16:47:01 | INFO | __main__:initialize:128 - Dragon Email Agent initialized successfully!
+2026-06-01 16:47:01 | INFO | __main__:start:149 - Starting Dragon Email Agent...
+2026-06-01 16:47:01 | INFO | voice:activate:667 - Voice system activated
+2026-06-01 16:47:01 | INFO | __main__:start:155 - Voice system activated
+2026-06-01 16:47:01 | INFO | __main__:_start_background_tasks:178 - Background scheduler started
+2026-06-01 16:47:01 | INFO | __main__:_main_loop:182 - Dragon Email Agent is running. Type 'help' for commands.
+2026-06-01 16:47:07 | INFO | __main__:signal_handler:755 - Received shutdown signal
+2026-06-01 16:47:07 | INFO | __main__:shutdown:645 - Shutting down Dragon Email Agent...
+2026-06-01 16:47:07 | INFO | voice:deactivate:678 - Voice system deactivated
+2026-06-01 16:47:07 | INFO | voice:shutdown:808 - Voice System shutdown complete
+2026-06-01 16:47:07 | INFO | automation:stop:520 - Automation scheduler stopped
+2026-06-01 16:47:07 | INFO | automation:shutdown:702 - Automation Engine shutdown complete
+2026-06-01 16:47:07 | INFO | analytics:shutdown:504 - Analytics Module shutdown complete
+2026-06-01 16:47:07 | INFO | integrations:shutdown:788 - Integration Manager shutdown complete
+2026-06-01 16:47:07 | INFO | rag:shutdown:632 - RAG System shutdown complete
+2026-06-01 16:47:07 | ERROR | security:log:242 - Audit log error: No module named 'structlog'
+2026-06-01 16:47:07 | INFO | security:shutdown:511 - Security Module shutdown complete
+2026-06-01 16:47:07 | INFO | memory:shutdown:479 - Memory System shutdown complete
+2026-06-01 16:47:07 | ERROR | __main__:_main_loop:199 - Main loop error: IMAPIntegration.disconnect() missing 1 required positional argument: 'account_name'
+2026-06-01 16:55:25 | ERROR | integrations:connect:377 - IMAP connection failed: [Errno -2] Name or service not known
+2026-06-01 16:55:25 | ERROR | integrations:connect:377 - IMAP connection failed: b'[ALERT] Application-specific password required: https://support.google.com/accounts/answer/185833 (Failure)'
+2026-06-01 16:55:25 | INFO | integrations:initialize:661 - Integration Manager initialized
+2026-06-01 17:15:10 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 17:15:10 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 17:15:10 | INFO | __main__:initialize:72 - Initializing Dragon Email Agent...
+2026-06-01 17:15:10 | INFO | __main__:initialize:76 - Setting up database...
+2026-06-01 17:15:11 | INFO | __main__:initialize:79 - Database initialized
+2026-06-01 17:15:11 | INFO | __main__:initialize:82 - Initializing email engine...
+2026-06-01 17:15:11 | INFO | email_engine:initialize:750 - Email Engine initialized
+2026-06-01 17:15:11 | INFO | __main__:initialize:86 - Initializing memory system...
+2026-06-01 17:15:11 | INFO | memory:initialize:256 - Memory System initialized
+2026-06-01 17:15:11 | INFO | __main__:initialize:90 - Initializing RAG system...
+2026-06-01 17:15:11 | WARNING | rag:_initialize_model:44 - Sentence Transformers not available
+2026-06-01 17:15:11 | INFO | rag:initialize:471 - RAG System initialized
+2026-06-01 17:15:11 | INFO | __main__:initialize:94 - Initializing security...
+2026-06-01 17:15:11 | WARNING | security:_initialize:41 - Fernet cryptography not available
+2026-06-01 17:15:11 | INFO | security:initialize:441 - Security Module initialized
+2026-06-01 17:15:11 | INFO | __main__:initialize:98 - Initializing automation...
+2026-06-01 17:15:11 | INFO | automation:start:514 - Automation scheduler started
+2026-06-01 17:15:11 | INFO | automation:initialize:625 - Automation Engine initialized
+2026-06-01 17:15:11 | INFO | __main__:initialize:102 - Initializing analytics...
+2026-06-01 17:15:11 | INFO | analytics:initialize:476 - Analytics Module initialized
+2026-06-01 17:15:11 | INFO | __main__:initialize:106 - Initializing integrations...
+2026-06-01 17:15:24 | INFO | __main__:signal_handler:755 - Received shutdown signal
+2026-06-01 17:15:24 | INFO | __main__:shutdown:645 - Shutting down Dragon Email Agent...
+2026-06-01 17:15:24 | INFO | automation:stop:520 - Automation scheduler stopped
+2026-06-01 17:15:24 | INFO | automation:shutdown:702 - Automation Engine shutdown complete
+2026-06-01 17:15:24 | INFO | analytics:shutdown:504 - Analytics Module shutdown complete
+2026-06-01 17:15:24 | INFO | integrations:shutdown:788 - Integration Manager shutdown complete
+2026-06-01 17:15:24 | INFO | rag:shutdown:632 - RAG System shutdown complete
+2026-06-01 17:15:24 | ERROR | security:log:242 - Audit log error: No module named 'structlog'
+2026-06-01 17:15:24 | INFO | security:shutdown:511 - Security Module shutdown complete
+2026-06-01 17:15:24 | INFO | memory:shutdown:479 - Memory System shutdown complete
+2026-06-01 17:15:24 | ERROR | integrations:connect:377 - IMAP connection failed: 'NoneType' object has no attribute 'disconnect'
+2026-06-01 17:15:25 | INFO | integrations:connect:373 - IMAP connected: suryaramisetty70@gmail.com
+2026-06-01 17:15:25 | INFO | integrations:_connect_imap_account:718 - Connected to IMAP: suryaramisetty70@gmail.com (imap.gmail.com)
+2026-06-01 17:15:25 | INFO | integrations:initialize:661 - Integration Manager initialized
+2026-06-01 17:15:25 | INFO | __main__:initialize:115 - Initializing voice system...
+2026-06-01 17:15:25 | INFO | voice:initialize:659 - Voice System initialized
+2026-06-01 17:15:25 | INFO | __main__:initialize:124 - Loading contact memories...
+2026-06-01 17:15:25 | INFO | __main__:initialize:128 - Dragon Email Agent initialized successfully!
+2026-06-01 17:15:25 | INFO | __main__:start:149 - Starting Dragon Email Agent...
+2026-06-01 17:15:25 | INFO | voice:activate:667 - Voice system activated
+2026-06-01 17:15:25 | INFO | __main__:start:155 - Voice system activated
+2026-06-01 17:15:25 | INFO | __main__:_start_background_tasks:178 - Background scheduler started
+2026-06-01 17:15:25 | INFO | __main__:_main_loop:182 - Dragon Email Agent is running. Type 'help' for commands.
+2026-06-01 17:15:47 | WARNING | rag:<module>:22 - ChromaDB not available. RAG features will be limited.
+2026-06-01 17:15:47 | WARNING | rag:<module>:30 - Sentence Transformers not available. Using TF-IDF fallback.
+2026-06-01 17:15:47 | INFO | __main__:initialize:72 - Initializing Dragon Email Agent...
+2026-06-01 17:15:47 | INFO | __main__:initialize:76 - Setting up database...
+2026-06-01 17:15:48 | INFO | __main__:initialize:79 - Database initialized
+2026-06-01 17:15:48 | INFO | __main__:initialize:82 - Initializing email engine...
+2026-06-01 17:15:48 | INFO | email_engine:initialize:750 - Email Engine initialized
+2026-06-01 17:15:48 | INFO | __main__:initialize:86 - Initializing memory system...
+2026-06-01 17:15:48 | INFO | memory:initialize:256 - Memory System initialized
+2026-06-01 17:15:48 | INFO | __main__:initialize:90 - Initializing RAG system...
+2026-06-01 17:15:48 | WARNING | rag:_initialize_model:44 - Sentence Transformers not available
+2026-06-01 17:15:48 | INFO | rag:initialize:471 - RAG System initialized
+2026-06-01 17:15:48 | INFO | __main__:initialize:94 - Initializing security...
+2026-06-01 17:15:48 | WARNING | security:_initialize:41 - Fernet cryptography not available
+2026-06-01 17:15:48 | INFO | security:initialize:441 - Security Module initialized
+2026-06-01 17:15:48 | INFO | __main__:initialize:98 - Initializing automation...
+2026-06-01 17:15:48 | INFO | automation:start:514 - Automation scheduler started
+2026-06-01 17:15:48 | INFO | automation:initialize:625 - Automation Engine initialized
+2026-06-01 17:15:48 | INFO | __main__:initialize:102 - Initializing analytics...
+2026-06-01 17:15:48 | INFO | analytics:initialize:476 - Analytics Module initialized
+2026-06-01 17:15:48 | INFO | __main__:initialize:106 - Initializing integrations...
+2026-06-01 17:16:17 | INFO | __main__:signal_handler:755 - Received shutdown signal
+2026-06-01 17:16:17 | INFO | __main__:shutdown:645 - Shutting down Dragon Email Agent...
+2026-06-01 17:16:17 | INFO | automation:stop:520 - Automation scheduler stopped
+2026-06-01 17:16:17 | INFO | automation:shutdown:702 - Automation Engine shutdown complete
+2026-06-01 17:16:17 | INFO | analytics:shutdown:504 - Analytics Module shutdown complete
+2026-06-01 17:16:17 | INFO | integrations:shutdown:788 - Integration Manager shutdown complete
+2026-06-01 17:16:17 | INFO | rag:shutdown:632 - RAG System shutdown complete
+2026-06-01 17:16:17 | ERROR | security:log:242 - Audit log error: No module named 'structlog'
+2026-06-01 17:16:17 | INFO | security:shutdown:511 - Security Module shutdown complete
+2026-06-01 17:16:17 | INFO | memory:shutdown:479 - Memory System shutdown complete
+2026-06-01 17:16:17 | ERROR | integrations:connect:377 - IMAP connection failed: 'NoneType' object has no attribute 'disconnect'
+2026-06-01 17:16:17 | INFO | integrations:connect:373 - IMAP connected: suryaramisetty70@gmail.com
+2026-06-01 17:16:17 | INFO | integrations:_connect_imap_account:718 - Connected to IMAP: suryaramisetty70@gmail.com (imap.gmail.com)
+2026-06-01 17:16:17 | INFO | integrations:initialize:661 - Integration Manager initialized
+2026-06-01 17:16:17 | INFO | __main__:initialize:115 - Initializing voice system...
+2026-06-01 17:16:17 | INFO | voice:initialize:659 - Voice System initialized
+2026-06-01 17:16:17 | INFO | __main__:initialize:124 - Loading contact memories...
+2026-06-01 17:16:17 | INFO | __main__:initialize:128 - Dragon Email Agent initialized successfully!
+2026-06-01 17:16:17 | INFO | __main__:start:149 - Starting Dragon Email Agent...
+2026-06-01 17:16:17 | INFO | voice:activate:667 - Voice system activated
+2026-06-01 17:16:17 | INFO | __main__:start:155 - Voice system activated
+2026-06-01 17:16:17 | INFO | __main__:_start_background_tasks:178 - Background scheduler started
+2026-06-01 17:16:17 | INFO | __main__:_main_loop:182 - Dragon Email Agent is running. Type 'help' for commands.

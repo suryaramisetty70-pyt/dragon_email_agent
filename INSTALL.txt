@@ -1,0 +1,235 @@
+================================================================================
+🐉 DRAGON EMAIL AGENT - INSTALLATION GUIDE FOR WINDOWS
+================================================================================
+
+This file tells you EVERYTHING you need to do step by step.
+
+================================================================================
+📋 WHAT YOU NEED TO DO
+================================================================================
+
+STEP 1: Install Python on your computer
+----------------------------------------
+1. Go to: https://www.python.org/downloads/
+2. Click "Download Python"
+3. Run the installer
+4. ✅ IMPORTANT: Check the box "Add Python to PATH"
+5. Click "Install Now"
+
+STEP 2: Create a folder on your desktop
+----------------------------------------
+1. Go to Desktop
+2. Right-click → New → Folder
+3. Name it: dragon_email_agent
+
+STEP 3: Open Notepad
+----------------------------------------
+1. Press Windows key + R
+2. Type: notepad
+3. Press Enter
+
+STEP 4: Create the main program file
+----------------------------------------
+(Copy everything from the code box below into Notepad)
+
+----- COPY FROM HERE -----
+# Dragon Email Agent - Main Program
+# Save this as: main.py
+
+import sys
+import os
+import json
+import logging
+from datetime import datetime
+from loguru import logger
+
+# Add project path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+class DragonEmailAgent:
+    def __init__(self):
+        self.setup_logging()
+        self.load_config()
+        self.running = True
+        
+    def setup_logging(self):
+        """Setup logging"""
+        logger.add("logs/dragon.log", rotation="10 MB", level="INFO")
+        self.logger = logger
+        
+    def load_config(self):
+        """Load email accounts config"""
+        config_path = "config/email_accounts.json"
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as f:
+                self.config = json.load(f)
+            self.logger.info(f"Loaded {len(self.config.get('accounts', []))} email accounts")
+        else:
+            self.logger.error("Email config not found!")
+            self.config = {"accounts": []}
+    
+    def sync_emails(self):
+        """Sync emails from all accounts"""
+        import imaplib
+        
+        self.logger.info("Starting email sync...")
+        total = 0
+        
+        for account in self.config.get('accounts', []):
+            email = account.get('email', 'Unknown')
+            password = account.get('password', '')
+            imap_host = account.get('imap_host', '')
+            
+            if not email or not password or not imap_host:
+                continue
+            
+            try:
+                self.logger.info(f"Connecting to {email}...")
+                mail = imaplib.IMAP4_SSL(imap_host, 993, timeout=30)
+                mail.login(email, password)
+                
+                mail.select('INBOX')
+                status, messages = mail.search(None, 'ALL')
+                count = len(messages[0].split())
+                
+                self.logger.info(f"✅ {email}: {count} emails")
+                print(f"📧 {email}: {count} emails")
+                total += count
+                
+                mail.logout()
+            except Exception as e:
+                self.logger.error(f"❌ {email}: {e}")
+                print(f"❌ {email}: Connection failed")
+        
+        print(f"\n📬 Total emails: {total}")
+        return total
+    
+    def show_status(self):
+        """Show system status"""
+        print("\n" + "="*50)
+        print("🐉 DRAGON EMAIL AGENT - STATUS")
+        print("="*50)
+        print(f"Accounts configured: {len(self.config.get('accounts', []))}")
+        for acc in self.config.get('accounts', []):
+            print(f"  • {acc.get('email', 'Unknown')}")
+        print("="*50)
+    
+    def show_help(self):
+        """Show help message"""
+        print("\n" + "="*50)
+        print("🐉 DRAGON EMAIL AGENT - COMMANDS")
+        print("="*50)
+        print("  sync     - Sync all emails")
+        print("  status   - Show account status")
+        print("  help     - Show this help")
+        print("  exit     - Exit the program")
+        print("="*50)
+    
+    def run(self):
+        """Main loop"""
+        print("\n" + "="*50)
+        print("🐉 DRAGON EMAIL AGENT")
+        print("="*50)
+        print("Type 'help' for commands, 'exit' to quit")
+        print("="*50 + "\n")
+        
+        while self.running:
+            try:
+                user_input = input("Dragon> ").strip()
+                
+                if not user_input:
+                    continue
+                elif user_input.lower() in ['exit', 'quit', 'q']:
+                    print("Goodbye! 🐉")
+                    self.running = False
+                elif user_input.lower() in ['help', 'h', '?']:
+                    self.show_help()
+                elif user_input.lower() in ['sync', 's']:
+                    self.sync_emails()
+                elif user_input.lower() in ['status', 'st']:
+                    self.show_status()
+                else:
+                    print(f"Unknown command: {user_input}")
+                    print("Type 'help' for available commands")
+                    
+            except KeyboardInterrupt:
+                print("\nGoodbye! 🐉")
+                self.running = False
+            except Exception as e:
+                self.logger.error(f"Error: {e}")
+                print(f"Error: {e}")
+
+def main():
+    """Entry point"""
+    # Create necessary directories
+    os.makedirs("logs", exist_ok=True)
+    os.makedirs("data", exist_ok=True)
+    os.makedirs("config", exist_ok=True)
+    
+    # Run the agent
+    agent = DragonEmailAgent()
+    agent.run()
+
+if __name__ == "__main__":
+    main()
+----- COPY UNTIL HERE -----
+
+4. Save this file as: main.py
+5. Save it in the dragon_email_agent folder on your Desktop
+
+STEP 5: Create the config file
+----------------------------------------
+1. Open Notepad again
+2. Copy this:
+
+----- COPY FROM HERE -----
+{
+  "accounts": [
+    {
+      "email": "suryaramisetty70@gmail.com",
+      "password": "tflbhmszmsutpsip",
+      "imap_host": "imap.gmail.com",
+      "imap_port": 993,
+      "smtp_host": "smtp.gmail.com",
+      "smtp_port": 587,
+      "is_active": true,
+      "account_type": "personal",
+      "display_name": "Personal Email"
+    }
+  ],
+  "sync_interval_minutes": 5,
+  "sync_on_startup": true,
+  "notifications_enabled": true
+}
+----- COPY UNTIL HERE -----
+
+3. Save this file as: email_accounts.json
+4. Save it in: dragon_email_agent/config/email_accounts.json
+
+STEP 6: Install Python packages
+----------------------------------------
+1. Open Command Prompt (Windows key + R, type cmd, Enter)
+2. Type this and press Enter:
+
+pip install loguru pydantic pydantic-settings sqlalchemy fastapi uvicorn python-dateutil beautifulsoup4 apscheduler pyyaml
+
+3. Wait 2 minutes for installation
+
+STEP 7: Run the program!
+----------------------------------------
+1. Open Command Prompt
+2. Type these commands:
+
+cd Desktop\dragon_email_agent
+python main.py
+
+3. Type "sync" to check emails
+4. Type "exit" to quit
+
+================================================================================
+🎉 YOU'RE DONE! 🎉
+================================================================================
+
+Questions? Just ask! 🐉
+
+================================================================================
