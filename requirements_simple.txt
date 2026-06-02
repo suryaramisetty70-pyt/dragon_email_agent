@@ -1,0 +1,13 @@
+# Dragon Email Agent - Minimal Requirements
+# Run: pip install -r requirements_simple.txt
+
+loguru==0.7.2
+pydantic==2.9.2
+pydantic-settings==2.5.2
+sqlalchemy==2.0.35
+fastapi==0.115.0
+uvicorn==0.30.6
+python-dateutil==2.9.0
+beautifulsoup4==4.12.3
+apscheduler==3.10.4
+pyyaml==6.0.2
