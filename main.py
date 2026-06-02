@@ -1280,7 +1280,7 @@ class DragonEmailAgent:
                 print(color("\n\n🐉 Dragon signing off!", Colors.HEADER))
                 break
             except Exception as e:
-                print(color(f"❌ Error: {e}", Colors.FAIL)
+                print(color(f"❌ Error: {e}", Colors.FAIL))
 
 # ==================== MAIN ====================
 def main():
