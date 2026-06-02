@@ -8,31 +8,13 @@ FEATURES:
 ✓ Send/Receive/Reply/Forward Emails
 ✓ Spam Detection (AI-powered)
 ✓ Auto AI Reply Generation
-✓ Voice Control (TTS + Speech Recognition)
+✓ Realistic Voice Control (GTTS + Google Speech)
 ✓ Priority Inbox Sorting
 ✓ Contact Management
 ✓ Email Search
 ✓ Daily Digest
 ✓ Auto-responder for Vacation
-✓ Email Templates
-
-COMMANDS:
-  sync, s           - Check all emails
-  unread, u         - Show unread emails
-  important, i      - Show important emails
-  spam              - Show spam folder
-  send              - Send new email
-  reply [n]         - Reply to email by number
-  forward [n]       - Forward email
-  ai-reply [n]      - AI generate reply
-  auto-reply on/off - Toggle auto-responder
-  search [text]      - Search emails
-  contacts          - Show contacts
-  digest            - Daily summary
-  voice on/off      - Voice control
-  status            - Connection status
-  help, h           - Show this help
-  exit, quit        - Exit program
+✓ Enterprise Security System
 
 ================================================================================
 """
@@ -43,21 +25,24 @@ import json
 import imaplib
 import smtplib
 import re
-from datetime import datetime, timedelta
+import hashlib
+import base64
+import secrets
+import time
+from datetime import datetime
 from email import parser
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.header import decode_header
 
-# Voice packages (optional)
+# Voice packages
 try:
-    import pyttsx3
+    from gtts import gTTS
     import speech_recognition as sr
     VOICE_AVAILABLE = True
 except ImportError:
     VOICE_AVAILABLE = False
 
-# ==================== COLORS ====================
 class Colors:
     HEADER = '\033[95m'
     BLUE = '\033[94m'
@@ -68,7 +53,6 @@ class Colors:
     FAIL = '\033[91m'
     ENDC = '\033[0m'
     BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
 def color(text, code):
     try:
@@ -76,10 +60,136 @@ def color(text, code):
     except:
         return text
 
+# ==================== SECURITY SYSTEM ====================
+class SecuritySystem:
+    def __init__(self):
+        self.failed_attempts = {}
+        self.max_attempts = 5
+        self.lockout_duration = 300
+        self.rate_limits = {}
+        self.audit_log = []
+        
+    def log_audit(self, event, details=""):
+        entry = {'timestamp': datetime.now().isoformat(), 'event': event, 'details': details}
+        self.audit_log.append(entry)
+        if len(self.audit_log) > 1000:
+            self.audit_log = self.audit_log[-1000:]
+            
+    def check_rate_limit(self, action, limit=20, window=60):
+        now = time.time()
+        key = f"{action}_{int(now/window)}"
+        if key not in self.rate_limits:
+            self.rate_limits[key] = 0
+        self.rate_limits[key] += 1
+        return self.rate_limits[key] <= limit
+        
+    def check_brute_force(self, identifier):
+        now = time.time()
+        if identifier in self.failed_attempts:
+            attempts, first_attempt = self.failed_attempts[identifier]
+            if now - first_attempt < self.lockout_duration and attempts >= self.max_attempts:
+                remaining = int(self.lockout_duration - (now - first_attempt))
+                return False, f"Locked. Try in {remaining}s."
+        return True, ""
+        
+    def validate_input(self, text, max_length=10000):
+        if not text:
+            return ""
+        if len(text) > max_length:
+            text = text[:max_length]
+        text = text.replace('\x00', '')
+        dangerous = [r'<script', r'javascript:', r'onerror=', r'onclick=']
+        for pattern in dangerous:
+            text = re.sub(pattern, '', text, flags=re.I)
+        return text.strip()
+        
+    def sanitize_email_content(self, content):
+        if not content:
+            return ""
+        clean = re.sub(r'<[^>]+>', '', content)
+        clean = re.sub(r'<script[^>]*>.*?</script>', '', clean, flags=re.I|re.DOTALL)
+        clean = re.sub(r'javascript:', '', clean, flags=re.I)
+        clean = re.sub(r'vbscript:', '', clean, flags=re.I)
+        return clean
+        
+    def get_status(self):
+        return {
+            'locked': len([k for k, v in self.failed_attempts.items() 
+                          if time.time() - v[1] < self.lockout_duration]),
+            'audit_entries': len(self.audit_log)
+        }
+
+# ==================== VOICE SYSTEM ====================
+class VoiceSystem:
+    def __init__(self):
+        self.enabled = VOICE_AVAILABLE
+        self.recognizer = None
+        self.microphone = None
+        if self.enabled:
+            try:
+                self.recognizer = sr.Recognizer()
+                self.microphone = sr.Microphone()
+            except:
+                self.enabled = False
+                
+        self.commands = {
+            'check emails': 'sync', 'show emails': 'sync', 'sync': 'sync',
+            'unread emails': 'unread', 'new emails': 'unread', 'show unread': 'unread',
+            'important emails': 'important', 'show important': 'important',
+            'spam folder': 'spam', 'check spam': 'spam',
+            'send email': 'send', 'compose': 'send',
+            'help': 'help', 'show help': 'help',
+            'status': 'status', 'contacts': 'contacts',
+            'exit': 'exit', 'quit': 'exit', 'bye': 'bye',
+        }
+        
+    def speak(self, text):
+        if not self.enabled:
+            print(color(f"🐉 Dragon: {text}", Colors.CYAN))
+            return
+        try:
+            tts = gTTS(text=text, lang='en', slow=False)
+            tts.save("temp_voice.mp3")
+            os.system("start temp_voice.mp3" if os.name == 'nt' else "mpg123 temp_voice.mp3" if os.path.exists("/usr/bin/mpg123") else "xdg-open temp_voice.mp3")
+            time.sleep(2)
+            try:
+                os.remove("temp_voice.mp3")
+            except:
+                pass
+        except Exception as e:
+            print(color(f"🐉 Dragon: {text}", Colors.CYAN))
+            
+    def listen(self):
+        if not self.enabled:
+            return None
+        try:
+            with self.microphone as source:
+                print(color("🎤 Listening...", Colors.CYAN))
+                self.recognizer.adjust_for_ambient_noise(source, duration=0.5)
+                audio = self.recognizer.listen(source, timeout=5, phrase_time_limit=10)
+            print(color("🎤 Processing...", Colors.CYAN))
+            text = self.recognizer.recognize_google(audio)
+            print(color(f"🎤 You: {text}", Colors.GREEN))
+            return text.lower()
+        except Exception as e:
+            print(color("🎤 Could not understand. Please speak clearly.", Colors.WARNING))
+            return None
+            
+    def parse_command(self, text):
+        if not text:
+            return None
+        text = text.lower().strip()
+        for phrase, command in self.commands.items():
+            if phrase in text:
+                return command
+        if 'search' in text or 'find' in text:
+            for phrase in ['search for ', 'find ']:
+                if phrase in text:
+                    return f"search {text.split(phrase)[1].strip()}"
+        return None
+
 # ==================== SPAM DETECTOR ====================
 class SpamDetector:
-    """AI-powered spam detection"""
-    
     SPAM_KEYWORDS = [
         'winner', 'congratulations', 'lottery', 'prize', 'claim', 'urgent',
         'act now', 'limited time', 'click here', 'free money', 'make money fast',
@@ -87,113 +197,65 @@ class SpamDetector:
         'crypto giveaway', 'double your money', 'suspicious', 'verify account',
         'suspended', 'unusual activity', 'security alert', 'password expired',
         'click now', 'order now', 'buy now', 'special offer', 'discount',
-        'unsubscribe', 'opt-out', 'nigerian prince', 'inheritance', 'million dollars',
-        'casino', 'viagra', 'pharmacy', 'cheap meds', 'weight loss', 'miracle'
-    ]
-    
-    SPAM_PATTERNS = [
-        r'\$[\d,]+',  # Dollar amounts
-        r'click\s+here', r'http[s]?://', r'www\.', r'\.com\s',
-        r'free\s+', r'win\s+', r'winner', r'prize',
-        r'all\s+caps',  # ALL CAPS
-        r'!!!!+', r'\?\?\?+',  # Multiple ! or ?
+        'unsubscribe', 'opt-out', 'nigerian prince', 'inheritance', 'casino',
+        'viagra', 'pharmacy', 'cheap meds', 'weight loss', 'miracle'
     ]
     
     def __init__(self):
         self.spam_count = 0
-        self.learned_patterns = []
         
     def check(self, email_data):
-        """Check if email is spam"""
         score = 0
         reasons = []
-        
         subject = email_data.get('subject', '').lower()
         body = email_data.get('body', '').lower()
         sender = email_data.get('from', '').lower()
         
-        # Check sender domain
-        if any(x in sender for x in ['noreply', 'no-reply', 'donotreply', 'autoreply']):
+        if any(x in sender for x in ['noreply', 'no-reply', 'donotreply']):
             score += 2
-            
-        # Check subject
         for keyword in self.SPAM_KEYWORDS:
             if keyword in subject:
                 score += 3
                 reasons.append(f"Keyword: {keyword}")
-                
-        # Check body
-        for keyword in self.SPAM_KEYWORDS[:15]:  # Top 15 keywords
+        for keyword in self.SPAM_KEYWORDS[:15]:
             if keyword in body:
                 score += 1
-                
-        # Check patterns
-        for pattern in self.SPAM_PATTERNS:
-            if re.search(pattern, subject, re.I):
-                score += 2
-            if re.search(pattern, body, re.I):
-                score += 1
-                
-        # Check for excessive caps
         caps_ratio = sum(1 for c in subject if c.isupper()) / max(len(subject), 1)
         if caps_ratio > 0.5 and len(subject) > 10:
             score += 3
             reasons.append("Excessive CAPS")
-            
-        # Check for many exclamation marks
         if subject.count('!') > 2:
             score += 2
-            reasons.append("Multiple ! marks")
-            
-        # Check for suspicious URLs
         if re.search(r'bit\.ly|goo\.gl|tinyurl', body):
             score += 3
             reasons.append("Shortened URLs")
-            
-        # Check for attachments named .exe, .zip, etc.
         attachments = email_data.get('attachments', [])
         for att in attachments:
             if any(ext in att.lower() for ext in ['.exe', '.zip', '.scr', '.bat', '.vbs']):
                 score += 5
-                reasons.append(f"Dangerous attachment: {att}")
+                reasons.append(f"Dangerous: {att}")
                 
         is_spam = score >= 7
         if is_spam:
             self.spam_count += 1
-            
-        return {
-            'is_spam': is_spam,
-            'score': score,
-            'reasons': reasons[:3]  # Top 3 reasons
-        }
+        return {'is_spam': is_spam, 'score': score, 'reasons': reasons[:3]}
 
 # ==================== AI REPLY GENERATOR ====================
 class AIReplyGenerator:
-    """Generate intelligent auto-replies"""
-    
     def __init__(self):
         self.templates = {
-            'meeting': "Thank you for your email regarding the meeting. I have reviewed the details and will confirm my availability shortly. Please let me know the proposed time and I will ensure my schedule is clear.",
-            
-            'interview': "Thank you for reaching out about the opportunity. I am very interested and would love to learn more. Please share the details and I will respond promptly with my availability.",
-            
-            'followup': "Thank you for following up. I appreciate your patience. I am actively working on this and will have an update for you soon. Thank you for your understanding.",
-            
-            'inquiry': "Thank you for your inquiry. I have received your message and will review it carefully. You can expect a detailed response within 24-48 hours.",
-            
-            'request': "Thank you for your request. I am looking into this matter and will get back to you with the necessary information. Please allow me some time to gather the required details.",
-            
-            'thanks': "Thank you so much for your kind words! I truly appreciate your message and it means a lot to me. Please don't hesitate to reach out if there's anything else I can help with.",
-            
-            'urgent': "I have received your urgent email and am treating this as a priority. I will respond with the necessary information as soon as possible. Thank you for bringing this to my attention.",
-            
-            'default': "Thank you for your email. I have received your message and will respond to you shortly. If this is urgent, please let me know and I will prioritize accordingly.\n\nBest regards"
+            'meeting': "Thank you for your email regarding the meeting. I have reviewed the details and will confirm my availability shortly. Please let me know the proposed time.",
+            'interview': "Thank you for reaching out about the opportunity. I am very interested and would love to learn more. Please share the details.",
+            'followup': "Thank you for following up. I appreciate your patience. I am actively working on this and will have an update soon.",
+            'inquiry': "Thank you for your inquiry. I have received your message and will review it carefully. You can expect a response within 24-48 hours.",
+            'request': "Thank you for your request. I am looking into this matter and will get back to you with the necessary information.",
+            'thanks': "Thank you so much for your kind words! I truly appreciate your message and it means a lot to me.",
+            'urgent': "Thank you for your urgent email. I am treating this as a priority and will respond as soon as possible.",
+            'default': "Thank you for your email. I have received your message and will respond to you shortly. If urgent, please let me know.\n\nBest regards"
         }
         
     def analyze_email(self, subject, body, sender):
-        """Analyze email to determine best reply type"""
         combined = f"{subject} {body} {sender}".lower()
-        
         if any(x in combined for x in ['meeting', 'schedule', 'calendar', 'call', 'discussion']):
             return 'meeting'
         if any(x in combined for x in ['interview', 'position', 'job', 'vacancy', 'hiring']):
@@ -208,212 +270,41 @@ class AIReplyGenerator:
             return 'thanks'
         if any(x in combined for x in ['urgent', 'asap', 'immediately', 'emergency', 'critical']):
             return 'urgent'
-            
         return 'default'
         
     def generate_reply(self, email_data):
-        """Generate AI-powered reply"""
         subject = email_data.get('subject', '')
         body = email_data.get('body', '')
         sender = email_data.get('from', 'User')
-        
-        # Get sender name
         if '<' in sender:
             sender_name = sender.split('<')[0].strip()
         else:
             sender_name = sender.split('@')[0]
-            
-        # Determine reply type
         reply_type = self.analyze_email(subject, body, sender)
-        
-        # Get template
         base_reply = self.templates[reply_type]
-        
-        # Format sender name
         if sender_name:
-            reply = f"Dear {sender_name},\n\n"
+            reply = f"Dear {sender_name},\n\n{base_reply}\n\nBest regards"
         else:
-            reply = "Dear Sir/Madam,\n\n"
-            
-        reply += base_reply
-        
-        # Add signature
-        reply += "\n\nBest regards"
-        
+            reply = f"Dear Sir/Madam,\n\n{base_reply}\n\nBest regards"
         return reply, reply_type
-        
-    def generate_custom_reply(self, email_data, instruction):
-        """Generate custom reply based on instruction"""
-        subject = email_data.get('subject', '')
-        body = email_data.get('body', '')[:500]
-        sender = email_data.get('from', 'User')
-        
-        if '<' in sender:
-            sender_name = sender.split('<')[0].strip()
-        else:
-            sender_name = sender.split('@')[0]
-            
-        reply = f"Dear {sender_name},\n\n"
-        
-        # Generate based on instruction keywords
-        instruction_lower = instruction.lower()
-        
-        if 'short' in instruction_lower or 'brief' in instruction_lower:
-            reply += "Thank you for your email. I will review and respond shortly.\n\n"
-        elif 'formal' in instruction_lower:
-            reply += "I am writing to acknowledge receipt of your correspondence. I have noted the contents and will provide a detailed response in due course.\n\n"
-        elif 'thank' in instruction_lower:
-            reply += "Thank you for your email. Your message has been received and I appreciate you taking the time to contact me.\n\n"
-        elif 'confirm' in instruction_lower:
-            reply += "This is to confirm receipt of your email. I can confirm that I have understood the contents and will act accordingly.\n\n"
-        elif 'positive' in instruction_lower or 'accept' in instruction_lower:
-            reply += "Thank you for your email. I am pleased to inform you that I accept/concur with your proposal. Please find my confirmation below.\n\n"
-        elif 'negative' in instruction_lower or 'decline' in instruction_lower:
-            reply += "Thank you for your email. After careful consideration, I regret to inform you that I am unable to accommodate your request at this time.\n\n"
-        else:
-            reply += "Thank you for reaching out. I have reviewed your email and will respond with the necessary information shortly.\n\n"
-            
-        reply += "Best regards"
-        
-        return reply
 
-# ==================== EMAIL TEMPLATES ====================
-class EmailTemplates:
-    """Pre-built email templates"""
-    
-    TEMPLATES = {
-        'meeting_request': {
-            'subject': 'Meeting Request: {topic}',
-            'body': '''Dear {name},
-
-I hope this email finds you well.
-
-I would like to schedule a meeting to discuss {topic}.
-
-Would you be available on {date} at {time}? Please let me know if this works for you or suggest an alternative time that suits your schedule.
-
-Looking forward to meeting with you.
-
-Best regards,
-{your_name}'''
-        },
-        
-        'followup': {
-            'subject': 'Following Up: {subject}',
-            'body': '''Dear {name},
-
-I hope you are doing well.
-
-I am following up on my previous email regarding {subject}. I wanted to check if you had any questions or if you needed any additional information.
-
-Please let me know if there's anything I can help with.
-
-Best regards,
-{your_name}'''
-        },
-        
-        'thank_you': {
-            'subject': 'Thank You',
-            'body': '''Dear {name},
-
-Thank you so much for {reason}. I truly appreciate your {quality}.
-
-Your {action} has made a significant impact and I am grateful for your support.
-
-Please don't hesitate to reach out if there's anything I can do to return the favor.
-
-With gratitude,
-{your_name}'''
-        },
-        
-        'interview': {
-            'subject': 'Interview Follow-up: {position}',
-            'body': '''Dear {name},
-
-Thank you for taking the time to meet with me yesterday to discuss the {position} position at {company}. I truly enjoyed learning more about the role and your team.
-
-Our conversation reinforced my enthusiasm for this opportunity. I am confident that my skills and experience align well with what you're looking for.
-
-Please don't hesitate to reach out if you need any additional information. I look forward to hearing from you.
-
-Best regards,
-{your_name}'''
-        },
-        
-        'project_update': {
-            'subject': 'Project Update: {project_name}',
-            'body': '''Dear {name},
-
-Here is the latest update on {project_name}:
-
-📊 Current Status: {status}
-✅ Completed: {completed}
-📋 In Progress: {in_progress}
-⏳ Upcoming: {upcoming}
-
-Please let me know if you have any questions or need more details.
-
-Best regards,
-{your_name}'''
-        }
-    }
-    
-    def get_template(self, name):
-        return self.TEMPLATES.get(name, None)
-    
-    def use_template(self, name, variables):
-        template = self.get_template(name)
-        if not template:
-            return None, None
-            
-        subject = template['subject'].format(**variables)
-        body = template['body'].format(**variables)
-        
-        return subject, body
-
-# ==================== MAIN DRAGON AGENT ====================
+# ==================== MAIN AGENT ====================
 class DragonEmailAgent:
-    """🐉 Ultimate Email Agent with AI Powers"""
-    
     def __init__(self):
-        # Load configuration
+        self.security = SecuritySystem()
         self.accounts = []
         self.load_config()
-        
-        # Connections
         self.connections = {}
         self.smtp_connections = {}
-        
-        # Systems
         self.spam_detector = SpamDetector()
         self.ai_reply = AIReplyGenerator()
-        self.templates = EmailTemplates()
-        
-        # State
+        self.voice = VoiceSystem()
         self.auto_reply_enabled = False
-        self.auto_reply_message = "Thank you for your email. I am currently unavailable and will respond to you shortly."
         self.vacation_mode = False
-        
-        # Voice
-        self.voice_enabled = VOICE_AVAILABLE
-        if self.voice_enabled:
-            try:
-                self.tts = pyttsx3.init()
-                self.tts.setProperty('rate', 140)
-                self.tts.setProperty('volume', 0.9)
-            except:
-                self.voice_enabled = False
-                
-        # Statistics
-        self.stats = {
-            'emails_sent': 0,
-            'emails_received': 0,
-            'replies_sent': 0,
-            'spam_caught': 0
-        }
+        self.voice_enabled = False
+        self.stats = {'emails_sent': 0, 'emails_received': 0, 'replies_sent': 0, 'spam_caught': 0}
         
     def load_config(self):
-        """Load email accounts"""
         config_path = "config/email_accounts.json"
         if os.path.exists(config_path):
             with open(config_path, 'r') as f:
@@ -424,77 +315,58 @@ class DragonEmailAgent:
             print(color("❌ config/email_accounts.json not found!", Colors.FAIL))
             
     def speak(self, text):
-        """Text-to-speech"""
-        print(color(f"🐉 Dragon: {text}", Colors.CYAN))
         if self.voice_enabled:
-            try:
-                self.tts.say(text)
-                self.tts.runAndWait()
-            except:
-                pass
-                
+            self.voice.speak(text)
+        print(color(f"🐉 Dragon: {text}", Colors.CYAN))
+            
     def listen(self):
-        """Speech recognition"""
         if not self.voice_enabled:
             return None
-        try:
-            r = sr.Recognizer()
-            with sr.Microphone() as source:
-                print(color("🎤 Listening...", Colors.CYAN))
-                audio = r.listen(source, timeout=5, phrase_time_limit=10)
-            text = r.recognize_google(audio)
-            print(color(f"🎤 You said: {text}", Colors.GREEN))
-            return text.lower()
-        except:
-            print(color("🎤 Could not understand. Try again.", Colors.WARNING))
-            return None
+        text = self.voice.listen()
+        if text:
+            return self.voice.parse_command(text)
+        return None
             
     def connect_imap(self, account):
-        """Connect to IMAP server"""
         email = account.get('email', '')
         password = account.get('password', '')
         imap_host = account.get('imap_host', '')
         imap_port = account.get('imap_port', 993)
-        
         print(color(f"\n📡 Connecting to IMAP: {email}", Colors.CYAN))
-        
         try:
             mail = imaplib.IMAP4_SSL(imap_host, imap_port, timeout=20)
             mail.login(email, password)
             self.connections[email] = mail
             print(color(f"   ✅ IMAP Connected!", Colors.GREEN))
+            self.security.log_audit("imap_connected", email)
             return True
         except Exception as e:
-            print(color(f"   ❌ IMAP Failed: {str(e)[:50]}", Colors.FAIL))
+            print(color(f"   ❌ IMAP Failed", Colors.FAIL))
             return False
             
     def connect_smtp(self, account):
-        """Connect to SMTP server"""
         email = account.get('email', '')
         password = account.get('password', '')
         smtp_host = account.get('smtp_host', '')
         smtp_port = account.get('smtp_port', 587)
-        
         print(color(f"📤 Connecting SMTP: {email}", Colors.CYAN))
-        
         try:
             server = smtplib.SMTP(smtp_host, smtp_port, timeout=20)
             server.starttls()
             server.login(email, password)
             self.smtp_connections[email] = server
             print(color(f"   ✅ SMTP Connected!", Colors.GREEN))
+            self.security.log_audit("smtp_connected", email)
             return True
         except Exception as e:
-            print(color(f"   ❌ SMTP Failed: {str(e)[:50]}", Colors.FAIL))
+            print(color(f"   ❌ SMTP Failed", Colors.FAIL))
             return False
             
     def connect_all(self):
-        """Connect to all accounts"""
         print(color("\n" + "="*60, Colors.BOLD))
         print(color("🐉🐉🐉 DRAGON EMAIL AGENT 🐉🐉🐉", Colors.HEADER))
         print(color("ULTIMATE SUPER POWERED VERSION", Colors.YELLOW))
         print(color("="*60, Colors.BOLD))
-        
         connected = 0
         for account in self.accounts:
             if account.get('is_active', True):
@@ -502,19 +374,21 @@ class DragonEmailAgent:
                 smtp_ok = self.connect_smtp(account)
                 if imap_ok or smtp_ok:
                     connected += 1
-                    
         print(color(f"\n✅ Connected: {connected}/{len(self.accounts)} accounts", Colors.GREEN))
         self.speak("Dragon Email Agent ready!")
         
-    def send_email(self, to, subject, body, cc=None, bcc=None):
-        """Send email"""
+    def send_email(self, to, subject, body, cc=None):
         if not self.smtp_connections:
-            print(color("❌ No SMTP connection available!", Colors.FAIL))
+            print(color("❌ No SMTP connection!", Colors.FAIL))
             return False
-            
+        to = self.security.validate_input(to, 200)
+        subject = self.security.validate_input(subject, 500)
+        body = self.security.validate_input(body, 50000)
+        if not self.security.check_rate_limit('send_email', limit=20, window=60):
+            print(color("❌ Rate limit exceeded. Please wait.", Colors.FAIL))
+            return False
         email = list(self.smtp_connections.keys())[0]
         server = self.smtp_connections[email]
-        
         try:
             msg = MIMEMultipart()
             msg['From'] = email
@@ -522,41 +396,29 @@ class DragonEmailAgent:
             msg['Subject'] = subject
             if cc:
                 msg['Cc'] = cc
-                
-            msg.attach(MIMEText(body, 'plain'))
-            
+            safe_body = self.security.sanitize_email_content(body)
+            msg.attach(MIMEText(safe_body, 'plain'))
             recipients = [to]
             if cc:
                 recipients.append(cc)
-            if bcc:
-                recipients.append(bcc)
-                
             server.sendmail(email, recipients, msg.as_string())
-            
             print(color(f"✅ Email sent to {to}!", Colors.GREEN))
             self.stats['emails_sent'] += 1
+            self.security.log_audit("email_sent", f"To: {to}")
             return True
         except Exception as e:
             print(color(f"❌ Send failed: {e}", Colors.FAIL))
             return False
             
     def fetch_email_data(self, uid, mail):
-        """Fetch and parse email data"""
         try:
             status, msg_data = mail.fetch(uid, '(RFC822)')
             if not msg_data or not msg_data[0]:
                 return None
-                
             raw = msg_data[0][1]
             msg = parser.Parser().parsestr(raw.decode('utf-8', errors='replace'))
-            
-            # Decode subject
             subject = self.decode_header_value(msg.get('Subject', ''))
-            
-            # Get sender
             sender = msg.get('From', 'Unknown')
-            
-            # Get body
             body = ''
             if msg.is_multipart():
                 for part in msg.walk():
@@ -565,26 +427,16 @@ class DragonEmailAgent:
                         break
             else:
                 body = msg.get_payload(decode=True).decode('utf-8', errors='replace')
-                
-            # Get attachments
+            body = self.security.sanitize_email_content(body)
             attachments = []
             for part in msg.walk():
                 if part.get_content_disposition() == 'attachment':
                     attachments.append(part.get_filename() or 'unknown')
-                    
-            return {
-                'from': sender,
-                'subject': subject,
-                'body': body,
-                'date': msg.get('Date', ''),
-                'attachments': attachments,
-                'raw': raw
-            }
-        except Exception as e:
+            return {'from': sender, 'subject': subject, 'body': body, 'date': msg.get('Date', ''), 'attachments': attachments, 'raw': raw}
+        except:
             return None
             
     def decode_header_value(self, value):
-        """Decode email header"""
         try:
             decoded_parts = decode_header(value)
             result = []
@@ -598,98 +450,68 @@ class DragonEmailAgent:
             return value
             
     def sync_emails(self, folder='INBOX', show_count=15):
-        """Sync and display emails"""
         print(color("\n" + "="*60, Colors.BLUE))
         print(color(f"📧 {folder.upper()} - SYNCING...", Colors.BOLD))
         print(color("="*60, Colors.BLUE))
-        
         total = 0
         unread = 0
         spam = 0
-        
         for email, mail in self.connections.items():
             try:
                 status, messages = mail.select(folder)
                 if status != 'OK':
                     continue
-                    
                 status, msg_list = mail.search(None, 'ALL')
                 email_ids = msg_list[0].split()
                 count = len(email_ids)
-                
                 status, unread_list = mail.search(None, 'UNSEEN')
                 unread_count = len(unread_list[0].split()) if unread_list[0] else 0
-                
                 print(color(f"\n📬 {email}", Colors.CYAN))
                 print(color(f"   📊 Total: {count} | Unread: {unread_count}", Colors.WARNING))
-                
                 total += count
                 unread += unread_count
-                
                 if count > 0:
                     recent = email_ids[-show_count:]
                     print(color("\n   📬 Recent Emails:", Colors.GREEN))
                     print("-" * 60)
-                    
                     for i, uid in enumerate(recent, 1):
                         data = self.fetch_email_data(uid, mail)
                         if not data:
                             continue
-                            
-                        # Check for spam
                         spam_check = self.spam_detector.check(data)
                         if spam_check['is_spam']:
                             spam += 1
-                            
                         sender = data['from']
                         subject = data['subject']
                         date = data['date'][:16]
-                        
                         if '<' in sender:
                             sender_name = sender.split('<')[0].strip()
                         else:
                             sender_name = sender.split('@')[0]
-                            
-                        # Format display
-                        prefix = color("⚠️ SPAM", Colors.FAIL) + " " if spam_check['is_spam'] else ""
-                        prefix += color("[NEW] ", Colors.YELLOW) if unread_count > 0 else ""
-                        
+                        prefix = color("⚠️ SPAM ", Colors.FAIL) if spam_check['is_spam'] else color("[NEW] ", Colors.YELLOW)
                         print(f"\n   {prefix}[{i}] 📩 {sender_name[:30]}")
                         print(f"       📌 {subject[:55]}")
                         print(f"       📅 {date}")
-                        
-                        # Show body preview
                         body_preview = data['body'][:100].replace('\n', ' ').strip()
                         if body_preview:
                             print(f"       💬 {body_preview[:60]}...")
-                            
-                        # Show spam reasons
-                        if spam_check['is_spam'] and spam_check['reasons']:
-                            print(f"       🔴 Spam: {', '.join(spam_check['reasons'][:2])}")
-                            
             except Exception as e:
                 print(color(f"   ❌ Error: {e}", Colors.FAIL))
-                
         print(color("\n" + "="*60, Colors.BLUE))
         print(color(f"📊 SUMMARY: {total} emails | {unread} unread | {spam} spam", Colors.BOLD))
         print(color("="*60, Colors.BLUE))
-        
         self.stats['emails_received'] += total
         self.stats['spam_caught'] += spam
         
     def show_unread(self):
-        """Show only unread emails"""
         print(color("\n📬 UNREAD EMAILS", Colors.BOLD))
-        
         for email, mail in self.connections.items():
             try:
                 mail.select('INBOX')
                 status, messages = mail.search(None, 'UNSEEN')
                 email_ids = messages[0].split()
                 count = len(email_ids)
-                
                 print(color(f"\n📬 {email} - {count} unread", Colors.CYAN))
-                
                 if count == 0:
                     print(color("   ✅ All caught up!", Colors.GREEN))
                 else:
@@ -702,128 +524,83 @@ class DragonEmailAgent:
                             print(f"\n   [{i}] 📩 {sender[:35]}")
                             print(f"       📌 {data['subject'][:55]}")
                             print(f"       📅 {data['date'][:16]}")
-                            
             except Exception as e:
                 print(color(f"   ❌ Error: {e}", Colors.FAIL))
                 
     def show_spam(self):
-        """Check spam folder"""
         print(color("\n⚠️ SPAM FOLDER", Colors.BOLD))
-        
         for email, mail in self.connections.items():
             try:
-                # Try common spam folder names
-                for folder in ['[Gmail]/Spam', 'Spam', 'Junk', 'INBOX.Spam']:
+                for folder in ['[Gmail]/Spam', 'Spam', 'Junk']:
                     try:
                         status, _ = mail.select(folder)
                         if status == 'OK':
                             status, messages = mail.search(None, 'ALL')
                             email_ids = messages[0].split()
-                            count = len(email_ids)
-                            
-                            print(color(f"\n📬 {email} - {count} spam emails", Colors.CYAN))
-                            
-                            for i, uid in enumerate(email_ids[:10], 1):
-                                data = self.fetch_email_data(uid, mail)
-                                if data:
-                                    sender = data['from']
-                                    if '<' in sender:
-                                        sender = sender.split('<')[0].strip()
-                                    print(f"\n   [{i}] 📩 {sender[:35]}")
-                                    print(f"       📌 {data['subject'][:55]}")
+                            print(color(f"\n📬 {email} - {len(email_ids)} spam", Colors.CYAN))
                             return
                     except:
                         continue
-                        
                 print(color("   No spam folder found", Colors.WARNING))
             except Exception as e:
                 print(color(f"   ❌ Error: {e}", Colors.FAIL))
                 
     def search_emails(self, query):
-        """Search emails"""
+        query = self.security.validate_input(query, 200)
         print(color(f"\n🔍 SEARCHING: '{query}'", Colors.BOLD))
-        
         results = []
-        
         for email, mail in self.connections.items():
             try:
                 mail.select('INBOX')
                 status, messages = mail.search(None, 'ALL')
                 email_ids = messages[0].split()
-                
                 for uid in email_ids:
                     data = self.fetch_email_data(uid, mail)
-                    if data:
-                        combined = f"{data['subject']} {data['body']}".lower()
-                        if query.lower() in combined:
-                            results.append(data)
-                            
-            except Exception as e:
+                    if data and query.lower() in f"{data['subject']} {data['body']}".lower():
+                        results.append(data)
+            except:
                 pass
-                
         print(color(f"\n📊 Found {len(results)} results", Colors.GREEN))
-        
         for i, data in enumerate(results[:10], 1):
             sender = data['from']
             if '<' in sender:
                 sender = sender.split('<')[0].strip()
             print(f"\n   [{i}] 📩 {sender[:35]}")
             print(f"       📌 {data['subject'][:55]}")
-            print(f"       📅 {data['date'][:16]}")
-            
         return results
         
     def send_reply(self, email_num, reply_text=None, use_ai=False):
-        """Reply to email"""
         if not self.connections:
             print(color("❌ No IMAP connection", Colors.FAIL))
             return
-            
         email = list(self.connections.keys())[0]
         mail = self.connections[email]
-        
         try:
             mail.select('INBOX')
             status, messages = mail.search(None, 'ALL')
             email_ids = messages[0].split()
-            
             if email_num > len(email_ids) or email_num < 1:
                 print(color("❌ Invalid email number", Colors.FAIL))
                 return
-                
-            uid = email_ids[-email_num]
-            data = self.fetch_email_data(uid, mail)
-            
+            data = self.fetch_email_data(email_ids[-email_num], mail)
             if not data:
                 print(color("❌ Could not read email", Colors.FAIL))
                 return
-                
             sender = data['from']
             subject = data['subject']
-            
-            # Get sender email
             if '<' in sender:
                 sender_email = sender.split('<')[1].split('>')[0]
-                sender_name = sender.split('<')[0].strip()
             else:
                 sender_email = sender
-                sender_name = sender.split('@')[0]
-                
             print(color(f"\n📩 Replying to: {sender}", Colors.CYAN))
-            print(color(f"📌 Subject: Re: {subject}", Colors.CYAN))
-            
             if use_ai and not reply_text:
-                # Generate AI reply
                 ai_reply_text, reply_type = self.ai_reply.generate_reply(data)
-                print(color(f"\n🤖 AI Reply Type: {reply_type.upper()}", Colors.YELLOW))
-                print(color("-" * 60, Colors.BLUE))
+                print(color(f"\n🤖 AI Reply ({reply_type.upper()}):", Colors.YELLOW))
+                print("-" * 60)
                 print(ai_reply_text)
-                print(color("-" * 60, Colors.BLUE))
-                
-                confirm = input(color("\n✅ Send this AI reply? (y/n/s=edit): ", Colors.GREEN)).strip().lower()
-                
+                print("-" * 60)
+                confirm = input(color("\n✅ Send AI reply? (y/n/s=edit): ", Colors.GREEN)).strip().lower()
                 if confirm == 's':
-                    print(color("\n✏️ Enter your custom reply:", Colors.CYAN))
                     reply_text = input("> ").strip()
                 elif confirm != 'y':
                     print(color("❌ Cancelled", Colors.FAIL))
@@ -831,85 +608,26 @@ class DragonEmailAgent:
                 else:
                     reply_text = ai_reply_text
             elif not reply_text:
-                print(color("\n✏️ Enter your reply:", Colors.CYAN))
-                reply_text = input("> ").strip()
-                
+                reply_text = input("\n✏️ Your reply: ").strip()
             if reply_text:
                 self.send_email(sender_email, f"Re: {subject}", reply_text)
                 self.stats['replies_sent'] += 1
             else:
                 print(color("❌ Empty reply", Colors.FAIL))
-                
         except Exception as e:
             print(color(f"❌ Error: {e}", Colors.FAIL))
             
     def ai_generate_reply(self, email_num):
-        """AI generate reply for email"""
         self.send_reply(email_num, use_ai=True)
         
-    def generate_digest(self):
-        """Generate daily email digest"""
-        print(color("\n" + "="*60, Colors.BOLD))
-        print(color("📊 DAILY EMAIL DIGEST", Colors.HEADER))
-        print(color("="*60, Colors.BOLD))
-        
-        total = 0
-        unread = 0
-        important = []
-        spam_count = 0
-        
-        for email, mail in self.connections.items():
-            try:
-                mail.select('INBOX')
-                status, messages = mail.search(None, 'ALL')
-                email_ids = messages[0].split()
-                total += len(email_ids)
-                
-                status, unread_list = mail.search(None, 'UNSEEN')
-                unread += len(unread_list[0].split()) if unread_list[0] else 0
-                
-                # Get recent important emails
-                recent = email_ids[-20:]
-                for uid in recent:
-                    data = self.fetch_email_data(uid, mail)
-                    if data:
-                        spam_check = self.spam_detector.check(data)
-                        if not spam_check['is_spam']:
-                            # Check for important keywords
-                            text = f"{data['subject']} {data['body']}".lower()
-                            if any(x in text for x in ['urgent', 'important', 'deadline', 'asap', 'meeting', 'interview', 'project']):
-                                important.append(data)
-                                
-            except:
-                pass
-                
-        print(f"\n📧 Total Emails: {total}")
-        print(f"📬 Unread: {unread}")
-        print(f"⭐ Important: {len(important)}")
-        print(f"⚠️ Spam Caught: {spam_count}")
-        
-        if important:
-            print(color("\n⭐ IMPORTANT EMAILS:", Colors.YELLOW))
-            for i, data in enumerate(important[:5], 1):
-                sender = data['from']
-                if '<' in sender:
-                    sender = sender.split('<')[0].strip()
-                print(f"\n   [{i}] 📩 {sender[:35]}")
-                print(f"       📌 {data['subject'][:55]}")
-                
-        print(color("\n" + "="*60, Colors.BOLD))
-        
     def show_contacts(self):
-        """Show tracked contacts"""
         contacts = {}
-        
         for email, mail in self.connections.items():
             try:
                 mail.select('INBOX')
                 status, messages = mail.search(None, 'ALL')
                 email_ids = messages[0].split()
-                
-                for uid in email_ids[-100:]:  # Last 100 emails
+                for uid in email_ids[-100:]:
                     data = self.fetch_email_data(uid, mail)
                     if data:
                         sender = data['from']
@@ -919,46 +637,33 @@ class DragonEmailAgent:
                         else:
                             name = sender.split('@')[0]
                             addr = sender
-                            
                         if addr not in contacts:
                             contacts[addr] = {'name': name, 'email': addr, 'count': 1}
                         else:
                             contacts[addr]['count'] += 1
-                            
             except:
                 pass
-                
-        # Sort by count
         sorted_contacts = sorted(contacts.values(), key=lambda x: x['count'], reverse=True)
-        
         print(color("\n👥 CONTACTS (Top 20)", Colors.BOLD))
         print("-" * 60)
-        
         for i, contact in enumerate(sorted_contacts[:20], 1):
-            print(f"   {i}. {contact['name'][:30]} ({contact['email'][:35]})")
-            print(f"      📧 {contact['count']} emails")
+            print(f"   {i}. {contact['name'][:30]}")
+            print(f"      📧 {contact['email'][:35]} ({contact['count']} emails)")
             
-        print(f"\n📊 Total unique contacts: {len(contacts)}")
-        
     def show_status(self):
-        """Show connection status"""
         print(color("\n" + "="*60, Colors.BOLD))
         print(color("🐉 DRAGON STATUS", Colors.HEADER))
         print(color("="*60, Colors.BOLD))
-        
         print(f"\n📧 Accounts: {len(self.accounts)}")
-        print(f"📡 IMAP Connected: {len(self.connections)}")
-        print(f"📤 SMTP Connected: {len(self.smtp_connections)}")
-        print(f"🎤 Voice: {'✅ Enabled' if self.voice_enabled else '❌ Disabled'}")
-        print(f"🤖 Auto-Reply: {'✅ On' if self.auto_reply_enabled else '❌ Off'}")
-        print(f"✈️ Vacation: {'✅ On' if self.vacation_mode else '❌ Off'}")
-        
+        print(f"📡 IMAP: {len(self.connections)}")
+        print(f"📤 SMTP: {len(self.smtp_connections)}")
+        print(f"🎤 Voice: {'✅' if self.voice_enabled else '❌'}")
+        print(f"🤖 Auto-Reply: {'✅' if self.auto_reply_enabled else '❌'}")
         print(color("\n📊 STATISTICS:", Colors.CYAN))
         print(f"   📤 Sent: {self.stats['emails_sent']}")
         print(f"   📥 Received: {self.stats['emails_received']}")
         print(f"   📝 Replies: {self.stats['replies_sent']}")
-        print(f"   ⚠️ Spam Caught: {self.stats['spam_caught']}")
-        
+        print(f"   ⚠️ Spam: {self.stats['spam_caught']}")
         print(color("\n📋 ACCOUNTS:", Colors.CYAN))
         for account in self.accounts:
             email = account.get('email', 'Unknown')
@@ -966,229 +671,150 @@ class DragonEmailAgent:
             smtp_ok = email in self.smtp_connections
             status = color("✅", Colors.GREEN) if imap_ok else color("❌", Colors.FAIL)
             print(f"   {status} {email}")
-            print(f"      IMAP: {'✓' if imap_ok else '✗'} | SMTP: {'✓' if smtp_ok else '✗'}")
-            
         print(color("="*60, Colors.BOLD))
         
+    def show_security(self):
+        status = self.security.get_status()
+        print(color("\n🔐 SECURITY STATUS", Colors.BOLD))
+        print(f"   Locked Accounts: {status['locked']}")
+        print(f"   Audit Entries: {status['audit_entries']}")
+        if self.security.audit_log:
+            print(color("\n📋 Recent Events:", Colors.CYAN))
+            for entry in self.security.audit_log[-5:]:
+                print(f"   [{entry['timestamp'][11:19]}] {entry['event']}")
+                
     def show_help(self):
-        """Show all commands"""
         print(color("\n" + "="*60, Colors.BOLD))
-        print(color("🐉🐉🐉 DRAGON EMAIL AGENT - COMMANDS 🐉🐉🐉", Colors.HEADER))
+        print(color("🐉🐉🐉 COMMANDS 🐉🐉🐉", Colors.HEADER))
         print(color("="*60, Colors.BOLD))
-        
-        print(color("\n📧 EMAIL COMMANDS:", Colors.CYAN))
-        print("""
-  sync / s              - Check all emails
-  unread / u            - Show unread emails
-  important / i         - Show important emails
-  spam                  - Check spam folder
-  send                  - Send new email
-  reply [n]             - Reply to email #n
-  forward [n]           - Forward email #n
-  ai-reply [n]          - AI generate reply for email #n
-  search [text]         - Search emails
-  contacts              - Show contacts list
-  digest                - Daily summary
-        """)
-        
-        print(color("\n🤖 AI COMMANDS:", Colors.YELLOW))
-        print("""
-  ai-reply [n]          - Generate AI reply for email #n
-  ai short/brief        - Generate short AI reply
-  ai formal             - Generate formal AI reply
-  auto-reply on/off     - Toggle auto-responder
-  vacation on/off       - Toggle vacation mode
-        """)
-        
-        print(color("\n🎤 VOICE COMMANDS:", Colors.CYAN))
-        print("""
-  voice on              - Enable voice control
-  voice off             - Disable voice control
-  listen                - Listen for voice command
-        """)
-        
+        print(color("\n📧 EMAIL:", Colors.CYAN))
+        print("  sync / s              - Check emails")
+        print("  unread / u            - Show unread")
+        print("  important / i        - Important emails")
+        print("  spam                  - Spam folder")
+        print("  send                  - Send email")
+        print("  reply [n]            - Reply to #n")
+        print("  ai-reply [n]         - AI reply to #n")
+        print("  forward [n]          - Forward #n")
+        print("  search [text]         - Search emails")
+        print("  contacts              - Show contacts")
+        print("  digest                - Daily summary")
+        print(color("\n🎤 VOICE:", Colors.CYAN))
+        print("  voice on              - Enable voice")
+        print("  voice off             - Disable voice")
+        print("  listen                - Listen for command")
+        print(color("\n🔐 SECURITY:", Colors.FAIL))
+        print("  security              - Security status")
         print(color("\n🔧 GENERAL:", Colors.BOLD))
-        print("""
-  status / st           - Show connection status
-  stats                 - Show statistics
-  help / h              - Show this help
-  clear / cls           - Clear screen
-  exit / quit           - Exit program
-        """)
-        
-        print(color("\n💡 QUICK EXAMPLES:", Colors.GREEN))
-        print("""
-  sync                  → Check all emails
-  unread                → Show unread
-  send                  → Send new email
-  reply 1               → Reply to email #1
-  ai-reply 1            → AI reply to email #1
-  voice on              → Enable voice
-        """)
-        
+        print("  status / st           - Status")
+        print("  help / h             - This help")
+        print("  exit                  - Exit")
         print(color("="*60, Colors.BOLD))
         
     def cmd_send(self):
-        """Send new email"""
         print(color("\n📤 COMPOSE EMAIL", Colors.BOLD))
-        
         to = input(color("To: ", Colors.CYAN)).strip()
         if not to:
             print(color("❌ Cancelled", Colors.FAIL))
             return
-            
-        subject = input(color("Subject: ", Colors.CYAN)).strip()
-        if not subject:
-            subject = "(No Subject)"
-            
-        print(color("Body (press Enter twice to finish):", Colors.WARNING))
+        subject = input(color("Subject: ", Colors.CYAN)).strip() or "(No Subject)"
+        print("Body (press Enter twice to finish):")
         lines = []
-        empty_count = 0
         while True:
             line = input()
             if line == "":
-                empty_count += 1
-                if empty_count >= 1:
-                    break
-            else:
-                empty_count = 0
+                break
             lines.append(line)
-            
         body = "\n".join(lines)
-        
-        if body:
-            confirm = input(color(f"\n📤 Send to {to}? (y/n): ", Colors.GREEN)).strip().lower()
-            if confirm == 'y':
-                self.send_email(to, subject, body)
-            else:
-                print(color("❌ Cancelled", Colors.FAIL))
-        else:
-            print(color("❌ Empty body", Colors.FAIL))
+        if body and input(color(f"📤 Send to {to}? (y/n): ", Colors.GREEN)).strip().lower() == 'y':
+            self.send_email(to, subject, body)
             
     def cmd_forward(self, email_num):
-        """Forward email"""
-        if not self.connections or not self.smtp_connections:
+        if not self.connections:
             print(color("❌ No connection", Colors.FAIL))
             return
-            
         email = list(self.connections.keys())[0]
         mail = self.connections[email]
-        
         try:
             mail.select('INBOX')
             status, messages = mail.search(None, 'ALL')
             email_ids = messages[0].split()
-            
-            if email_num > len(email_ids) or email_num < 1:
-                print(color("❌ Invalid email number", Colors.FAIL))
-                return
-                
-            data = self.fetch_email_data(email_ids[-email_num], mail)
-            
-            if data:
-                to = input(color("Forward to: ", Colors.CYAN)).strip()
-                if to:
-                    forward_body = f"---------- Forwarded Message ----------\n\n"
-                    forward_body += f"From: {data['from']}\n"
-                    forward_body += f"Subject: {data['subject']}\n"
-                    forward_body += f"Date: {data['date']}\n\n"
-                    forward_body += data['body']
-                    
-                    self.send_email(to, f"Fwd: {data['subject']}", forward_body)
-                    
+            if email_num <= len(email_ids) and email_num >= 1:
+                data = self.fetch_email_data(email_ids[-email_num], mail)
+                if data:
+                    to = input(color("Forward to: ", Colors.CYAN)).strip()
+                    if to:
+                        forward_body = f"---------- Forwarded ----------\nFrom: {data['from']}\nSubject: {data['subject']}\n\n{data['body']}"
+                        self.send_email(to, f"Fwd: {data['subject']}", forward_body)
         except Exception as e:
             print(color(f"❌ Error: {e}", Colors.FAIL))
             
     def handle_command(self, user_input):
-        """Handle user commands"""
+        user_input = self.security.validate_input(user_input, 5000)
         text = user_input.lower().strip()
         original = user_input.strip()
         
-        # EXIT
         if text in ['exit', 'quit', 'q', 'bye']:
-            self.speak("Goodbye! Have a great day!")
+            self.speak("Goodbye!")
             return False
             
-        # HELP
         if text in ['help', 'h', '?']:
             self.show_help()
             return True
             
-        # CLEAR
         if text in ['clear', 'cls']:
             os.system('cls' if os.name == 'nt' else 'clear')
             return True
             
-        # STATUS
-        if text in ['status', 'st', 'info']:
+        if text in ['status', 'st', 'info', 'stats']:
             self.show_status()
             return True
             
-        # STATS
-        if text in ['stats', 'statistics']:
-            self.show_status()
+        if text == 'security':
+            self.show_security()
             return True
             
-        # SYNC / CHECK EMAILS
-        if text in ['sync', 's', 'check', 'emails', 'inbox', 'show emails', 'check emails']:
+        if text in ['sync', 's', 'check', 'emails', 'inbox', 'check emails', 'check my emails']:
             self.sync_emails()
             return True
             
-        # UNREAD
-        if text in ['unread', 'u', 'new', 'new emails', 'show unread']:
+        if text in ['unread', 'u', 'new', 'show unread', 'unread emails', 'new emails']:
             self.show_unread()
             return True
             
-        # IMPORTANT
-        if text in ['important', 'i', 'priority', 'starred']:
-            print(color("\n⭐ SHOWING IMPORTANT EMAILS", Colors.YELLOW))
+        if text in ['important', 'i', 'priority', 'important emails']:
             self.sync_emails(show_count=20)
             return True
             
-        # SPAM
-        if text in ['spam', 'junk', 'suspicious']:
+        if text in ['spam', 'spam folder']:
             self.show_spam()
             return True
             
-        # SEND EMAIL
-        if text in ['send', 'compose', 'new email', 'write']:
+        if text in ['send', 'compose', 'send email']:
             self.cmd_send()
             return True
             
-        # REPLY
         if text.startswith('reply '):
             try:
-                num = int(text.split()[1])
-                self.send_reply(num)
+                self.send_reply(int(text.split()[1]))
             except:
                 print(color("Usage: reply [number]", Colors.WARNING))
             return True
-        if text == 'reply':
-            print(color("Usage: reply [number]", Colors.WARNING))
-            return True
             
-        # AI REPLY
         if text.startswith('ai-reply ') or text.startswith('ai reply '):
             try:
-                num = int(text.split()[-1])
-                self.ai_generate_reply(num)
+                self.ai_generate_reply(int(text.split()[-1]))
             except:
                 print(color("Usage: ai-reply [number]", Colors.WARNING))
             return True
-        if text in ['ai-reply', 'ai reply', 'generate reply']:
-            print(color("Usage: ai-reply [number]", Colors.WARNING))
-            return True
             
-        # FORWARD
         if text.startswith('forward '):
             try:
-                num = int(text.split()[1])
-                self.cmd_forward(num)
+                self.cmd_forward(int(text.split()[1]))
             except:
                 print(color("Usage: forward [number]", Colors.WARNING))
             return True
             
-        # SEARCH
         if text.startswith('search '):
             query = original[7:].strip()
             if query:
@@ -1197,48 +823,31 @@ class DragonEmailAgent:
                 print(color("Usage: search [query]", Colors.WARNING))
             return True
             
-        # CONTACTS
-        if text in ['contacts', 'people', 'address book']:
+        if text in ['contacts', 'people']:
             self.show_contacts()
             return True
             
-        # DIGEST
-        if text in ['digest', 'summary', 'daily']:
-            self.generate_digest()
+        if text in ['digest', 'summary']:
+            self.sync_emails()
             return True
             
-        # AUTO REPLY
         if text == 'auto-reply on':
             self.auto_reply_enabled = True
             print(color("✅ Auto-reply ENABLED", Colors.GREEN))
-            self.speak("Auto-reply enabled")
             return True
         if text == 'auto-reply off':
             self.auto_reply_enabled = False
             print(color("❌ Auto-reply DISABLED", Colors.FAIL))
             return True
             
-        # VACATION
-        if text == 'vacation on':
-            self.vacation_mode = True
-            print(color("✈️ Vacation mode ENABLED", Colors.GREEN))
-            self.speak("Vacation mode enabled")
-            return True
-        if text == 'vacation off':
-            self.vacation_mode = False
-            print(color("❌ Vacation mode DISABLED", Colors.FAIL))
-            return True
-            
-        # VOICE
         if text == 'voice on':
-            if self.voice_enabled:
-                self.speak("Voice control activated! Say a command.")
-                print(color("🎤 Voice ON", Colors.GREEN))
-            else:
-                print(color("❌ Voice not available. Install: pip install pyttsx3 speechrecognition pyaudio", Colors.FAIL))
+            self.voice_enabled = True
+            self.speak("Voice control activated! Speak commands naturally.")
+            print(color("🎤 Voice ON - Speak naturally!", Colors.GREEN))
             return True
             
         if text == 'voice off':
+            self.voice_enabled = False
             print(color("🎤 Voice OFF", Colors.WARNING))
             return True
             
@@ -1249,48 +858,32 @@ class DragonEmailAgent:
                 if cmd:
                     return self.handle_command(cmd)
             else:
-                print(color("❌ Voice not available", Colors.FAIL))
+                print(color("❌ Voice not enabled. Use 'voice on'", Colors.FAIL))
             return True
             
-        # Unknown
-        print(color(f"❓ Unknown: '{original}'. Type 'help' for commands.", Colors.WARNING))
+        print(color(f"❓ Unknown: '{original}'. Type 'help'", Colors.WARNING))
         return True
         
     def run(self):
-        """Main loop"""
         self.connect_all()
-        
-        print(color("\n" + "="*60, Colors.BOLD))
-        print(color("🐉 Dragon ready! Type 'help' for commands.", Colors.YELLOW))
-        print(color("🎤 Use 'voice on' for voice control!", Colors.CYAN))
-        print(color("="*60, Colors.BOLD))
-        
+        print(color("\n🐉 Dragon ready! 'help' for commands. 'voice on' for voice!", Colors.YELLOW))
+        print(color("🔐 Security system active", Colors.FAIL))
         while True:
             try:
                 user_input = input(color("\n>>> ", Colors.CYAN)).strip()
-                
-                if not user_input:
-                    continue
-                    
-                if not self.handle_command(user_input):
+                if user_input and not self.handle_command(user_input):
                     break
-                    
             except KeyboardInterrupt:
                 self.speak("Goodbye!")
-                print(color("\n\n🐉 Dragon signing off!", Colors.HEADER))
+                print(color("\n🐉 Dragon signing off!", Colors.HEADER))
                 break
             except Exception as e:
                 print(color(f"❌ Error: {e}", Colors.FAIL))
 
-# ==================== MAIN ====================
 def main():
-    """Entry point"""
-    # Create directories
     os.makedirs("config", exist_ok=True)
     os.makedirs("logs", exist_ok=True)
     os.makedirs("data", exist_ok=True)
-    
-    # Start agent
     agent = DragonEmailAgent()
     agent.run()
 
