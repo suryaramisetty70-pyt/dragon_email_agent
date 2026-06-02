@@ -775,41 +775,51 @@ class EmailEngine(DragonModule):
             "updated": 0,
             "errors": 0,
         }
-        
+
         self.logger.info(f"Starting email sync for {account}")
-        
+
         try:
-            # This would integrate with Gmail API or IMAP
-            # For now, we'll use IMAP as example
-            emails = self.imap.fetch_emails(limit=self.config.batch_size)
+            # Get emails from integration manager
+            emails = []
             
-            for msg_id, email_msg in emails:
+            if self.integration_manager and account in self.integration_manager._active_accounts:
+                imap = self.integration_manager.imap
+                if account in imap.connections:
+                    emails = imap.fetch_emails(account_name=account, limit=100)
+                    self.logger.info(f"Fetched {len(emails)} emails from {account}")
+                else:
+                    self.logger.warning(f"Account {account} not connected")
+            else:
+                self.logger.warning(f"Account {account} not in active accounts")
+            
+            for email_msg in emails:
                 try:
                     with self.db.get_session() as session:
                         existing = session.query(Email).filter(
                             Email.message_id == email_msg.message_id
                         ).first()
-                    
+
                     if not existing:
                         self._process_and_store_email(email_msg, account)
                         status["new"] += 1
                     else:
                         status["updated"] += 1
-                        
+
                     status["synced"] += 1
-                    
+
                 except Exception as e:
-                    logger.error(f"Failed to process email: {e}")
+                    self.logger.error(f"Failed to process email: {e}")
                     status["errors"] += 1
-                    
+
             # Cleanup old emails
             self._cleanup_old_emails()
-            
+
         except Exception as e:
-            logger.error(f"Email sync failed: {e}")
-            
+            self.logger.error(f"Email sync failed: {e}")
+            status["errors"] = 1
+
         return status
-        
+
     def _process_and_store_email(
         self, 
         email_msg: EmailMessage,
