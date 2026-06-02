@@ -13,8 +13,8 @@ pydantic-settings==2.5.2
 # Database
 sqlalchemy==2.0.35
 aiosqlite==0.20.0
-psycopg2-binary==2.9.9
-alembic==1.13.3
+# psycopg2-binary==2.9.9  # Only needed for PostgreSQL - remove if not using
+# alembic==1.13.3  # Only needed for PostgreSQL migrations
 
 # Email Handling
 imaplib-tools==0.5.1
